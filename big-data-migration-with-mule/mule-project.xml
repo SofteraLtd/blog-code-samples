@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mule-project xmlns="http://www.mulesoft.com/tooling/project" runtimeId="org.mule.tooling.server.3.8.3.ee" schemaVersion="3.5.0.0">
+    <name>sending-json-data-to-a-jms-queue_1.4.0</name>
+    <description></description>
+    <muleExtension name="Apache Kafka" qualifier="org.mule.tooling.ui.contribution.apachekafka.3.7.0"/>
+</mule-project>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:apachekafka="http://www.mulesoft.org/schema/mule/apachekafka"
+	xmlns:core="http://www.mulesoft.org/schema/mule/core" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/apachekafka http://www.mulesoft.org/schema/mule/apachekafka/current/mule-apachekafka.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd">
+
+	<batch:job name="ProductETL">
+        <batch:input>
+        	<db:select config-ref="MySQL_Configuration" doc:name="Database" streaming="true">
+                <db:parameterized-query><![CDATA[SELECT * FROM etl.product WHERE DATE(createDate) = CURDATE()]]></db:parameterized-query>
+	        </db:select>
+		</batch:input>
+		
+		<batch:process-records>
+			<batch:step name="Transform">
+                <dw:transform-message doc:name="Transform product">
+                    <dw:set-payload><![CDATA[%dw 1.0
+						%output application/json
+						---
+						{
+							ProductId: 	payload.productID,
+							Name: 		payload.shortName,
+							Category:	payload.category,
+							Size:		payload.size,
+							StartDate:	payload.createDate
+						}]]>
+					</dw:set-payload>
+				</dw:transform-message>
+			</batch:step>
+			
+			<batch:step name="Load">
+				<logger level="INFO" message="Loading Product Message: #[payload]" doc:name="Logger"/>
+				<apachekafka:producer config-ref="Apache_Kafka__Configuration" topic="reservoir_in" key="#[server.dateTime.getMilliSeconds()]" doc:name="Apache Kafka"/>
+			</batch:step>
+		</batch:process-records>
+		
+		<batch:on-complete>
+            <logger message="Batch Job processing for Products is complete" level="INFO" doc:name="Log Status"/>
+        </batch:on-complete>
+	</batch:job>
+	
+</mule>

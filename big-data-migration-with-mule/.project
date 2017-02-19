@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+  <name>big-data-migration-with-mule</name>
+  <comment>NO_M2ECLIPSE_SUPPORT: Project files created with the maven-eclipse-plugin are not supported in M2Eclipse.</comment>
+  <projects/>
+  <buildSpec>
+    <buildCommand>
+      <name>org.eclipse.jdt.core.javabuilder</name>
+    </buildCommand>
+    <buildCommand>
+      <name>org.mule.tooling.core.muleBuilder</name>
+    </buildCommand>
+    <buildCommand>
+      <name>org.mule.tooling.maven.mavenBuilder</name>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>org.mule.tooling.maven.mavenNature</nature>
+    <nature>org.eclipse.jdt.core.javanature</nature>
+    <nature>org.mule.tooling.core.muleNature</nature>
+  </natures>
+</projectDescription>
