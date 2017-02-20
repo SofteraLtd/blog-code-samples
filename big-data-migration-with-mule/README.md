@@ -13,17 +13,27 @@
 * The entire jobs make use of Mule's Batch Processing module, specifically built for this sort of use case.
 * The main flow has a ScatterGather router to efficiently spin multiple parallel workers dedicated on each batch job.
 
-##Set Up and Run the Example Locally
+##Run Locally
 
-0. Download / setup AnypointStudio, MySQL Community Server and Apache Kafka locally. 
-1. Download / clone this project from the Git repo.
-2. Start MySQL server and create the sample Database using *mysql.sql* script.
-3. Create Kafka Topic *reservoir_in*, typically using e.g.
+0. Download and setup AnypointStudio, MySQL Community Server and Apache Kafka using their respective quick start guides. 
+1. Download / clone this project.
+2. Maven compile the project e.g.
+```
+cd big-data-migration-with-mule
+mvn compile
+```
+3. Start MySQL server and create the sample Database using the *mysql.sql* script i.e.
+```
+mysql -u user -p < big-data-migration-with-mule/src/test/resources/mysql.sql
+```
+4. Create Kafka Topic *reservoir_in*, typically using e.g.
 ```
 $KAFKA_HOME/bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic reservoir_in
 ```       
-4. In the Package Explorer, right-click on the project, then select Run As > Mule Application or Mule Application with Maven . Studio runs the application on the embedded server. If all goes well you should see the processing kickstart straightaway.
-5. Run a Kafka Consumer to receive messages sent to the topic, e.g.
+5. In the Package Explorer, right-click on the *project*, then select *Run As* > *Mule Application with Maven* . Studio runs the application on the embedded server. If all goes well you should see the processing kickstart straightaway.
+6. Run a Kafka Consumer to receive messages sent to the topic, e.g.
 ```
 $KAFKA_HOME/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic reservoir_in --from-beginning
 ```
+
+Enjoy!
