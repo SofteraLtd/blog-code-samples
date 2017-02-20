@@ -15,23 +15,23 @@
 
 ##Run Locally
 
-0. Download and setup AnypointStudio, MySQL Community Server and Apache Kafka using their respective quick start guides. 
-1. Download / clone this project.
-2. Maven compile the project e.g.
+* Download and setup AnypointStudio, MySQL Community Server and Apache Kafka using their respective quick start guides. 
+* Download / clone this project.
+* Maven compile the project e.g.
 ```
 cd big-data-migration-with-mule
 mvn compile
 ```
-3. Start MySQL server and create the sample Database using the *mysql.sql* script i.e.
+* Start MySQL server and create the sample Database using the *mysql.sql* script i.e.
 ```
 mysql -u user -p < big-data-migration-with-mule/src/test/resources/mysql.sql
 ```
-4. Create Kafka Topic *reservoir_in*, typically using e.g.
+* Create Kafka Topic *reservoir_in*, typically using e.g.
 ```
 $KAFKA_HOME/bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic reservoir_in
-```       
-5. In the Package Explorer, right-click on the *project*, then select *Run As* > *Mule Application with Maven* . Studio runs the application on the embedded server. If all goes well you should see the processing kickstart straightaway.
-6. Run a Kafka Consumer to receive messages sent to the topic, e.g.
+```      
+* In the Package Explorer, right-click on the *project*, then select *Run As* > *Mule Application with Maven* . Studio runs the application on the embedded server. If all goes well you should see the processing kickstart straightaway.
+* Run a Kafka Consumer to receive messages sent to the topic, e.g.
 ```
 $KAFKA_HOME/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic reservoir_in --from-beginning
 ```
