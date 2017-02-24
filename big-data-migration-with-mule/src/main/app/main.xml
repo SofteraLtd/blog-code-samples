@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:apachekafka="http://www.mulesoft.org/schema/mule/apachekafka"  xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+<mule xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:apachekafka="http://www.mulesoft.org/schema/mule/apachekafka"  xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
@@ -14,19 +15,19 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
         <reconnect-forever/>
     </db:mysql-config>
     
-    <flow name="rdbms-to-kafka-endpoint">
-        <poll doc:name="Capture  Records">
+    <flow name="Rdbms-to-big-db-flow">
+        <poll doc:name="Daily Schedule">
 			<fixed-frequency-scheduler frequency="24" timeUnit="HOURS"/>
-			<logger level="INFO" message="Job triggered"/>
+			<logger level="INFO" message="Job triggered" doc:name="Logger"/>
 		</poll>
 		
-		<scatter-gather>
-			<batch:execute name="ProductETL" />
-			<batch:execute name="OrderETL" />
-			<batch:execute name="OrderItemsETL" />
+		<scatter-gather doc:name="Scatter-Gather Router">
+			<batch:execute name="ProductETL" doc:name="ProductETL"/>
+			<batch:execute name="OrderETL" doc:name="OrderETL"/>
+			<batch:execute name="OrderItemsETL" doc:name="OrderItemsETL"/>
 		</scatter-gather>
 		
-		<exception-strategy ref="defaultChoiceExceptionStrategy" doc:name="catch Exception and call defaultChoiceExceptionStrategy"/>
+		<exception-strategy ref="defaultChoiceExceptionStrategy" doc:name="Call DefaultChoiceExceptionStrategy"/>
     </flow>
     
 </mule>
