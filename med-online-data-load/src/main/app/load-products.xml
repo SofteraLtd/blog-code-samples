@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:json="http://www.mulesoft.org/schema/mule/json"
+	xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.8.3"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd 
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd 
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+	<flow name="CleanupProductsIndex">
+		<!-- Cleanup if already exist -->
+		<http:request config-ref="ElasticSearch_Rest_Config" path="products" method="DELETE" doc:name="Remove index"/>
+		<catch-exception-strategy logException="false"/> <!-- No need to log if the cleanup error -->
+	</flow>
+	
+	<sub-flow name="CreateProductsIndex">
+		<set-payload value=""/>
+		<http:request config-ref="ElasticSearch_Rest_Config" path="products" method="PUT" doc:name="Create index"/>
+		<logger level="INFO" message="Products Index created" doc:name="Create Index"/>
+	</sub-flow>	
+	
+	<sub-flow  name="LoadProducts">
+		<!-- 
+			*************************************
+				Transform using Data Weave  
+			*************************************
+		-->
+    	<dw:transform-message doc:name="Transform">
+            <dw:set-payload><![CDATA[%dw 1.0
+			%output application/java
+			---
+			payload map
+			{
+				id: $.PRODUCTCODE,
+				name: $.PRODUCT,
+				descr: $.SHORTDESCRIPTION,
+				brand: $.BRAND,
+				category: $.CATEGORY,
+				price: $.RRP
+			}]]></dw:set-payload>
+        </dw:transform-message>
+		<!-- 
+			*************************************
+				Load to Elastic Search Index 
+			*************************************
+		-->        
+        <foreach doc:name="For Each">
+            <json:object-to-json-transformer doc:name="toJSON"/>
+            <logger message="saving object: #[payload]" level="INFO" doc:name="Log Payload"/>
+            <http:request config-ref="ElasticSearch_Rest_Config" path="products/product" method="POST" doc:name="Send to Products index"/>
+        </foreach>
+		<!-- 
+			*************************************
+				Wrap up
+			*************************************
+		-->        
+        <logger level="INFO" message="Products ETL completed successfully" doc:name="Log Complete"/>
+    </sub-flow>
+</mule>

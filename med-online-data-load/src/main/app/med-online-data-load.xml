@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:json="http://www.mulesoft.org/schema/mule/json"
+	xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd 
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+
+	<http:request-config 
+		name="ElasticSearch_Rest_Config" 
+		host="${elastic.host}" 
+		port="${elastic.port}" 
+		doc:name="Elasticsearch REST Config" />
+		
+	<file:connector 
+		name="Input" 
+		autoDelete="false" 
+		streaming="false" 
+		validateConnections="true"
+		doc:name="File"/>
+		
+	<flow name="KeywordsMain" processingStrategy="synchronous">	
+		<file:inbound-endpoint connector-ref="Input" path="src/test/resources/input-keys" moveToDirectory="src/test/resources/processed" responseTimeout="10000" doc:name="Read Keywords CSV"/>
+		<all> 
+			<!-- We do need serial execution below so All router is required -->
+			<flow-ref name="CleanupKeywordsIndex" />
+			<flow-ref name="CreateKeywordsIndex" />
+			<flow-ref name="LoadKeywords" />
+		</all>		
+		<catch-exception-strategy doc:name="Default Logging Exception Strategy">
+            <logger level="ERROR" doc:name="Log Error"/>
+        </catch-exception-strategy>
+
+	</flow>
+	
+	<flow name="ProductsMain" processingStrategy="synchronous">
+		<file:inbound-endpoint connector-ref="Input" path="src/test/resources/input-prods" moveToDirectory="src/test/resources/processed" responseTimeout="10000" doc:name="Read Products CSV"/>
+		<all> 
+			<!-- We do need serial execution below so All router is required -->
+			<flow-ref name="CleanupProductsIndex" />
+			<flow-ref name="CreateProductsIndex" />
+			<flow-ref name="LoadProducts" />
+		</all>	
+		<catch-exception-strategy doc:name="Default Logging Exception Strategy">
+            <logger level="ERROR" doc:name="Log Error"/>
+        </catch-exception-strategy>
+	</flow>
+	
+</mule>

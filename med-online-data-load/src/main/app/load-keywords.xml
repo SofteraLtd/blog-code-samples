@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json="http://www.mulesoft.org/schema/mule/json"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.8.3"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd 
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+	<flow name="CleanupKeywordsIndex">
+		<!-- Cleanup if already exist -->
+		<http:request config-ref="ElasticSearch_Rest_Config" path="keywords" method="DELETE" doc:name="Remove index"/>
+		<catch-exception-strategy logException="false"/> <!-- No need to log if the cleanup error -->
+	</flow>
+
+	<sub-flow name="CreateKeywordsIndex">
+		<!-- 
+		*************************************
+			Create Index  
+		*************************************
+		-->
+		<dw:transform-message doc:name="Create Mapping">
+		   	<dw:set-payload><![CDATA[%dw 1.0
+				%output application/json
+				---
+		        {
+				  mappings: {
+				    keyword : {
+				      properties : {
+				        prod_id : { 
+				          type : "string" 
+				        },
+				        prod_suggest : {
+				          type :     "completion"
+				        }
+				      } 
+				    }
+				  }
+				}
+				]]>
+			</dw:set-payload>
+		</dw:transform-message>
+        <http:request config-ref="ElasticSearch_Rest_Config" path="keywords" method="PUT" doc:name="Create index"/>		
+		<logger level="INFO" message="Keywords Index created" doc:name="Create Index"/>
+	</sub-flow>
+	
+	<sub-flow name="LoadKeywords">	
+		<!-- 
+			*************************************
+				Transform using Data Weave  
+			*************************************
+		-->
+		<dw:transform-message doc:name="Transform">
+		   	<dw:set-payload><![CDATA[%dw 1.0
+				%output application/java
+				%function word(str) str splitBy ","
+				---
+				payload map
+				{
+				 prod_id : $.PRODUCTCODE,
+				 prod_suggest : 
+				 {
+				   input : word(lower $.KEYWORDS)
+				 }
+				}
+				]]>
+			</dw:set-payload>
+		</dw:transform-message>
+		<!-- 
+			*************************************
+				Load to Elastic Search Index 
+			*************************************
+		-->
+		<foreach doc:name="For Each">
+	    	<json:object-to-json-transformer doc:name="toJSON"/>
+	    	<logger level="INFO" message="#[payload]" doc:name="Log Payload"/>
+            <http:request config-ref="ElasticSearch_Rest_Config" path="keywords/keyword" method="POST" doc:name="Send to Keywords index"/>
+        </foreach>
+		
+		<!-- 
+			*************************************
+				Wrap up
+			*************************************
+		-->        	
+		<logger level="INFO" message="Keywords ETL completed successfully" doc:name="Log Complete"/>
+		
+	</sub-flow>
+	
+</mule>
