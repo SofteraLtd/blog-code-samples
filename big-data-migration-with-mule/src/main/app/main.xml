@@ -15,7 +15,7 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
         <reconnect-forever/>
     </db:mysql-config>
     
-    <flow name="Rdbms-to-big-db-flow">
+    <flow name="Main-trigger-flow">
         <poll doc:name="Daily Schedule">
 			<fixed-frequency-scheduler frequency="24" timeUnit="HOURS"/>
 			<logger level="INFO" message="Job triggered" doc:name="Logger"/>

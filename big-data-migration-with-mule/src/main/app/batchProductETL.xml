@@ -41,7 +41,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 			
 			<batch:step name="Load">
 				<logger level="INFO" message="Loading Product Message: #[payload]" doc:name="Logger"/>
-				<apachekafka:producer config-ref="Apache_Kafka__Configuration" topic="reservoir_in" key="#[server.dateTime.getMilliSeconds()]" doc:name="Send to Reservoir Endpoint"/>
+				<batch:commit size="40">
+					<apachekafka:producer topic="reservoir_in" key="#[server.dateTime.getMilliSeconds()]" doc:name="Send to Reservoir Endpoint" config-ref="Apache_Kafka__Configuration"/>
+				</batch:commit>
 			</batch:step>
 		</batch:process-records>
 		
