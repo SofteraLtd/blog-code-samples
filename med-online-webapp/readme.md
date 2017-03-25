@@ -1,4 +1,4 @@
-> Pre-req: Requires Elasticsearch to source data, see [project folder](/med-online-data-load) sample project to help prepare, load sample data to use with this example.
+> Pre-req: Requires Elasticsearch to source data, see [sample data loading project](/med-online-data-load) to help prepare, load test data for this example.
 
 1) Open a command prompt in the project's root directory (med-online-webapp)
 
