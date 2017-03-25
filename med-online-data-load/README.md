@@ -29,7 +29,7 @@ http.cors.allow-origin: /https?:\/\/localhost(:[0-9]+)?/
 $ES_HOME/bin/elasticsearch 
 ```      
 * In the Package Explorer, right-click on the *project*, then select *Run As* > *Mule Application with Maven*. Studio runs the application on the embedded server. If all goes well you should see the indexes are created and sample data is populated. 
-* Test using Browser or Curl as below to verify both indexes exist and have 100 items in each
+* Test using Browser or Curl as below to verify both indexes exist and have 100 items each.
 ```
 curl -XGET 'http://localhost:9200/products/product/_count'
 curl -XGET 'http://localhost:9200/keywords/keyword/_count'
