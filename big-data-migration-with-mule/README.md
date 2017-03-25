@@ -1,9 +1,9 @@
-#Big Data Migration with Mule
+# Big Data Migration with Mule
 * Send data from legacy RDBMS source to Big Data Reservoir for data ingestion typically over Kafka transport 
 
 >This project is developed using Mule Studio 6.2.1, with Mule Server 3.8.3 EE.
 
-##Overview
+## Overview
 * In this example, a MySQL database is used to read data. The MySQL script *mysql.sql* is available under *src/test/resources* folder.
 * The MySql connection settings are configured in *mule-app.properties* file.
 * The application is booted from the *main.xml* file which has a fixed-time scheduler set to tick once every 24 hours. 
@@ -13,7 +13,7 @@
 * The batch jobs use Mule's Batch Processing module, specifically designed for similar use cases!
 * The main flow has a ScatterGather router that efficiently spin-up multiple parallel worker threads executing each batch job.
 
-##Running Locally
+## Running Locally
 
 * Download and setup AnypointStudio, MySQL Community Server and Apache Kafka using their respective quick start guides. 
 * Download / clone this project.
