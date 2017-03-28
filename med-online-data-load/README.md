@@ -1,15 +1,21 @@
-# Data Load (ETL) project for [Med Online Webapp](/med-online-webapp)
+# Google-like Searches for Sites - Data Load (ETL) Project Part
+
+* For context / details about this project see the Softera blog at: 
+[https://www.softera.io/blog/march-2017/google-like-searches-for-sites](https://www.softera.io/blog/march-2017/google-like-searches-for-sites)
+* This is a companion project of [Sample Web App](/med-online-webapp)
+
+## Overview
 
 * Read sample (test) data from CSV files and store into Elasticsearch indexes.
 * There are two indexes - *products* and *keywords* - the first holds all product data for search and display while the latter is a special Completion index built for fast typeahead suggestions support.
+
+## Project Setup
 
 > This project is developed using Mule Studio 6.2 using embedded Mule Server 3.8.3 EE, and Elasticsearch 5.
 
 > Download Studio if required from https://www.mulesoft.com/platform/studio
 
 > Download Elasticsearch from https://www.elastic.co/products/elasticsearch
-
-## To run
 
 * Download / clone this project.
 * Maven compile and generate Eclipse project artifacts to open inside the Studio e.g.
