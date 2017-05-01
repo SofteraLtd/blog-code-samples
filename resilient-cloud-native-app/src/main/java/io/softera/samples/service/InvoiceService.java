@@ -43,7 +43,7 @@ public class InvoiceService implements IService {
 		String accountUri = String.format("%s/accounts/%d",BASE_URL,accountId);
 		
         return Observable.fromCallable(() -> restTemplate.getForObject(accountUri, Account.class))
-        		.doOnNext(n -> log.debug(String.format("Account [%d] retrieved", n.getAccountId())))
+        		.doOnNext(n -> log.info(String.format("Account id [%d] retrieved", n.getAccountId())))
         		.doOnError(ex -> log.warn("Error " + ex))
         	    .retryWhen(ex -> ex.delay(1000, TimeUnit.MILLISECONDS))
         	    .timeout(3, TimeUnit.SECONDS)
@@ -59,7 +59,7 @@ public class InvoiceService implements IService {
         String orderUri = String.format("%s/orders/%d",BASE_URL,orderId);
         
         return Observable.fromCallable(() -> restTemplate.getForObject(orderUri, Order.class))
-        		.doOnNext(n -> log.debug(String.format("Order [%d] retrieved", n.getOrderId())))
+        		.doOnNext(n -> log.info(String.format("Order id [%d] retrieved", n.getOrderId())))
         		.doOnError(ex -> log.warn("Error " + ex))
         	    .retryWhen(ex -> ex.delay(1000, TimeUnit.MILLISECONDS))
         	    .timeout(3, TimeUnit.SECONDS)

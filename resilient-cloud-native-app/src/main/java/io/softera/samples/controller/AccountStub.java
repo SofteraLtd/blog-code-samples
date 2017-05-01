@@ -12,7 +12,7 @@ public class AccountStub {
 	
 	protected static AtomicLong nextAccountId = new AtomicLong();
 	
-	private static Map<Long, Account> accounts = new HashMap<Long, Account>();
+	private static Map<Long, Account> accounts = new HashMap<>();
 	
 	static {
 		Account a1 = new Account(nextAccountId.incrementAndGet(), "Alba Trading", "Waterloo Street, London, SW1");

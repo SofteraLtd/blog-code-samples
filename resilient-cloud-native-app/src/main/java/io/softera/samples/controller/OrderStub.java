@@ -14,7 +14,7 @@ public class OrderStub {
 	
 	protected static AtomicLong nextOrderId = new AtomicLong();
 	
-	private static Map<Long, Order> orders = new HashMap<Long, Order>();
+	private static Map<Long, Order> orders = new HashMap<>();
 	
 	static {
 		Order o1 = new Order(nextOrderId.incrementAndGet(), new Double(100), LocalDate.now());

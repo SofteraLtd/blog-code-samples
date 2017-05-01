@@ -44,7 +44,7 @@ public class InvoiceServiceWithCircuitBreaker implements IService {
 		String accountUri = String.format("%s/accounts/%d",BASE_URL,accountId);
 		
         return Observable.fromCallable(() -> restTemplate.getForObject(accountUri, Account.class))
-        		.doOnNext(n -> log.debug(String.format("Account [%d] retrieved", n.getAccountId())))
+        		.doOnNext(n -> log.info(String.format("Account id [%d] retrieved", n.getAccountId())))
         		.subscribeOn(Schedulers.io());//fork a separate thread
 	}
 	
@@ -57,7 +57,7 @@ public class InvoiceServiceWithCircuitBreaker implements IService {
         String orderUri = String.format("%s/orders/%d",BASE_URL,orderId);
         
         return Observable.fromCallable(() -> restTemplate.getForObject(orderUri, Order.class))
-        		.doOnNext(n -> log.debug(String.format("Order [%d] retrieved", n.getOrderId())))
+        		.doOnNext(n -> log.info(String.format("Order id [%d] retrieved", n.getOrderId())))
         		.subscribeOn(Schedulers.io());//fork a separate thread
 	}
 	
@@ -67,7 +67,7 @@ public class InvoiceServiceWithCircuitBreaker implements IService {
 		String accountUri = String.format("%s/fallbacks/accounts",BASE_URL);
 		
         return Observable.fromCallable(() -> restTemplate.getForObject(accountUri, Account.class))
-        		.doOnNext(n -> log.debug(String.format("Account [%d] retrieved", n.getAccountId())))
+        		.doOnNext(n -> log.info(String.format("Account id [%d] retrieved", n.getAccountId())))
         		.subscribeOn(Schedulers.io());//fork a separate thread
 	}
 	
@@ -76,7 +76,7 @@ public class InvoiceServiceWithCircuitBreaker implements IService {
         String orderUri = String.format("%s/fallbacks/orders",BASE_URL);
         
         return Observable.fromCallable(() -> restTemplate.getForObject(orderUri, Order.class))
-        		.doOnNext(n -> log.debug(String.format("Order [%d] retrieved", n.getOrderId())))
+        		.doOnNext(n -> log.info(String.format("Order id [%d] retrieved", n.getOrderId())))
         		.subscribeOn(Schedulers.io());//fork a separate thread
 	}	
 }

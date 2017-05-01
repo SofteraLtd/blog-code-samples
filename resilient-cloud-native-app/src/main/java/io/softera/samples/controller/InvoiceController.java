@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.async.DeferredResult;
 
+import io.softera.samples.model.Invoice;
 import io.softera.samples.service.IService;
 
 @RestController
@@ -23,26 +25,34 @@ public class InvoiceController {
 	private IService invoiceServiceWithCircuitBreaker;
 	
 	@RequestMapping(value = "invoices", method = RequestMethod.POST)
-	public String create(@RequestParam("accountId") Long accountId, 
-						 @RequestParam("orderId") Long orderId) {
+	public DeferredResult<Invoice> create(@RequestParam("accountId") Long accountId, 
+						 				  @RequestParam("orderId") Long orderId) {
 		
+		DeferredResult<Invoice> deferredResult = new DeferredResult<>();
 		invoiceService.create(accountId, orderId)
 			   .subscribe(
-					   n -> log.info("Invoice created: "+n),
+					   n -> {
+						   log.info("Invoice created: " + n);	
+						   deferredResult.setResult(n);  	
+					   },
 					   e -> log.error("Fatal error: ",e));
 		
-		return "Request received, in async processing phase.";
+		return deferredResult;
 	}
 	
-	@RequestMapping(value = "invoices2", method = RequestMethod.POST)
-	public String createWithServiceVariant(@RequestParam("accountId") Long accountId, 
-						 				   @RequestParam("orderId") Long orderId) {
+	@RequestMapping(value = "invoices-cb", method = RequestMethod.POST)
+	public DeferredResult<Invoice> createWithServiceVariant(@RequestParam("accountId") Long accountId, 
+						 				   					@RequestParam("orderId") Long orderId) {
 		
+		DeferredResult<Invoice> deferredResult = new DeferredResult<>();
 		invoiceServiceWithCircuitBreaker.create(accountId, orderId)
 			   .subscribe(
-					   n -> log.info("Invoice created by variant service: "+n),
+					   n -> {
+						   log.info("Invoice created with variant service: " + n);	
+						   deferredResult.setResult(n);  	
+					   },
 					   e -> log.error("Fatal error in variant service: ",e));
 		
-		return "Request received, in async processing phase.";
+		return deferredResult;
 	}	
 }
