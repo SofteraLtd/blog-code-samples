@@ -2,7 +2,7 @@
 
 * For context / details about this project see the Softera blog at: 
 [https://www.softera.io/blog/march-2017/google-like-searches-for-sites](https://www.softera.io/blog/march-2017/google-like-searches-for-sites)
-* This is a companion project of [Sample Web App](/med-online-webapp)
+* This is a companion project of [Sample Web App](https://github.com/SofteraUK/angular2-elasticsearch-med-online)
 
 ## Overview
 

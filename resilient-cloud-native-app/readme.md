@@ -6,7 +6,7 @@
 ## Project Setup
 > Pre-req: Requires JDK 8 or higher installed on the host
 
-1) Open a command prompt in the project's root directory (resilient-cloud-native-app)
+1) Clone and open a command prompt on project's root dir.
 
 2) Type: `mvn spring-boot:run`
     This installs the dependencies as defined in the pom.xml file.
